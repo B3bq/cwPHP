@@ -1,6 +1,10 @@
 <?php
 
 namespace App;
+use App\Controllers\HomepageController;
+use App\Controllers\ArticlespageController;
+use App\Controllers\DashboardpageController;
+use App\Controllers\AboutpageController;
 
 class ServiceContainer
 {
@@ -12,10 +16,26 @@ class ServiceContainer
     {
         $this->services['router'] = new Router(
             [
-                'home' => ['path' => '/', 'page' => 'homepage'],
-                'about' => ['path' => '/about', 'page' => 'about'],
-                'articles' => ['path' => '/articles', 'page' => 'articles'],
-                'dashboard' => ['path' => '/dashboard', 'page' => 'dashboard']
+                'home' => [
+                    'path' => '/', 
+                    'page' => 'homepage',
+                    'controller' => new HomepageController()
+                ],
+                'about' => [
+                    'path' => '/about', 
+                    'page' => 'about',
+                    'controller' => new AboutpageController()
+                ],
+                'articles' => [
+                    'path' => '/articles/{id}', 
+                    'page' => 'articles',
+                    'controller' => new ArticlespageController()
+                ],
+                'dashboard' => [
+                    'path' => '/dashboard', 
+                    'page' => 'dashboard',
+                    'controller' => new DashboardpageController()
+                ]
             ]
         );
     }

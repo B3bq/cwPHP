@@ -1,6 +1,8 @@
 <?php
 namespace App;
 
+use App\Controllers\ControllerInterface;
+
 class Router
 {
     private array $routes;
@@ -10,21 +12,65 @@ class Router
         $this->routes = $availableRoutes;
     }
 
-    public function match(Request $request): ?string
+    public function match(Request $request): string|ControllerInterface
     {
-        $path = $request->getPath();
+        $trimmedRequestPath = ltrim($request->getPath(), '/');
+        $requestPathSegments = explode('/', $trimmedRequestPath);
 
-        foreach ($this->routes as $route) {
-            if ($route['path'] === $path) {
-                return $route['page'];
+        foreach ($this->routes as $routeName => $routeConfig){
+            $trimmedRoute = ltrim($routeConfig['path'], '/');
+            $routeSegments = explode('/', $trimmedRoute);
+
+            $params = $this->checkRoute($routeSegments, $requestPathSegments);
+            if ($params !== false) {
+                $request->setParameters($params);
+                return $routeConfig['controller'] ?? $routeConfig['page'];
             }
         }
 
-        return 'homepage';
+        throw new \Exception("Page not found", 404);
     }
 
-    public function path(string $routeName): string
+    public function generate($name, $params = [])
     {
-        return $this->routes[$routeName]['page'] ?? '/';
+        if (!isset($this->routes[$name])) {
+            throw new \Exception(sprintf('Route "%s" does not exists', $name));
+        }
+
+        $path = $this->routes[$name]['path'];
+        $trimmedRoute = ltrim($path, '/');
+        $routeSegments = explode('/', $trimmedRoute);
+
+        $uri = [];
+        for ($i = 0; $i < count($routeSegments); $i++) {
+            if (preg_match('/^{(.*)}$/', $routeSegments[$i], $matches)) {
+                $uri[] = $params[$matches[1]];
+
+            } else {
+                $uri[] = $routeSegments[$i];
+            }
+        }
+
+        return '/' . implode('/', $uri);
+    }
+
+    /**
+     * @param array $routeSegments
+     * @param array $requestPathSegments
+     * @return array|false
+     */
+    private function checkRoute(array $routeSegments, array $requestPathSegments)
+    {
+        $params = [];
+
+        for ($i = 0; $i < count($routeSegments); $i++) {
+            if (preg_match('/^{(.*)}$/', $routeSegments[$i], $matches)) {
+                $params[$matches[1]] = $requestPathSegments[$i];
+            } elseif ($routeSegments[$i] !== $requestPathSegments[$i]) {
+                return false;
+            }
+        }
+
+        return $params;
     }
 }

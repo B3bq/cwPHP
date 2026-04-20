@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Controllers\ControllerInterface;
+
 class Application
 {
     /**
@@ -24,9 +26,10 @@ class Application
         $instance = ServiceContainer::getInstance();
         $request = Request::prepareRequest();
         $router = $instance->get('router');
-        $this->page = $router->match($request);
+        $matchedRoute = $router->match($request);
 
-        $this->layout = new Layout($this->page, 'default');
-        $this->layout->render();
+        if ($matchedRoute instanceof ControllerInterface) {
+            $matchedRoute($request);
+        }
     }
 }

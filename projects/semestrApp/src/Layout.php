@@ -10,10 +10,13 @@ class Layout
 
     private string $title = "INF Backend App";
 
-    public function __construct(string $page, string $layoutName)
+    private $request;
+
+    public function __construct(Request $request, string $page, string $layoutName)
     {
         $this->page = $page;
         $this->layoutName = $layoutName;
+        $this->request = $request;
     }
 
     public function render(): void
@@ -31,6 +34,9 @@ class Layout
     public function getPageContent(): string
     {
         ob_start();
+        extract([
+            'request' => $this->request
+        ]);
         include __DIR__ . "/../page/$this->page.php";
         return ob_get_clean();
     }
