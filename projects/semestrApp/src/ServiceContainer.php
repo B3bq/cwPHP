@@ -2,9 +2,7 @@
 
 namespace App;
 use App\Controllers\HomepageController;
-use App\Controllers\ArticlespageController;
-use App\Controllers\DashboardpageController;
-use App\Controllers\AboutpageController;
+use App\Controllers\PageController;
 
 class ServiceContainer
 {
@@ -24,17 +22,17 @@ class ServiceContainer
                 'about' => [
                     'path' => '/about', 
                     'page' => 'about',
-                    'controller' => new AboutpageController()
+                    'controller' => new PageController('about')
                 ],
                 'articles' => [
                     'path' => '/articles/{id}', 
                     'page' => 'articles',
-                    'controller' => new ArticlespageController()
+                    'controller' => new PageController('articles')
                 ],
                 'dashboard' => [
                     'path' => '/dashboard', 
                     'page' => 'dashboard',
-                    'controller' => new DashboardpageController()
+                    'controller' => new PageController('dashboard')
                 ]
             ]
         );

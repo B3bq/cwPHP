@@ -30,7 +30,10 @@ class Application
 
         if ($matchedRoute instanceof ControllerInterface) {
             $response = $matchedRoute($request);
-            $response->render();
+            foreach ($response->getHeaders() as $header) {
+                header($header);
+            }
+            echo $response->getBody();
         }
     }
 }

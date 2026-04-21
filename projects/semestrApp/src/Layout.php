@@ -19,7 +19,7 @@ class Layout
         $this->request = $request;
     }
 
-    public function render(): void
+    public function render(): string
     {
         extract([
             'title' => $this->title,
@@ -27,8 +27,10 @@ class Layout
             'router' => ServiceContainer::getInstance()->get('router')
         ]);
 
+        ob_start();
         include __DIR__ . "/../layout/$this->layoutName.php";
 
+        return ob_get_clean();
     }
 
     public function getPageContent(): string
