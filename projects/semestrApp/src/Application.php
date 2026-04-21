@@ -29,7 +29,8 @@ class Application
         $matchedRoute = $router->match($request);
 
         if ($matchedRoute instanceof ControllerInterface) {
-            $matchedRoute($request);
+            $response = $matchedRoute($request);
+            $response->render();
         }
     }
 }
