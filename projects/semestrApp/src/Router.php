@@ -2,6 +2,7 @@
 namespace App;
 
 use App\Controllers\ControllerInterface;
+use App\Controllers\ErrorController;
 
 class Router
 {
@@ -28,7 +29,7 @@ class Router
             }
         }
 
-        throw new \Exception("Page not found", 404);
+        return new ErrorController();
     }
 
     public function generate($name, $params = [])
